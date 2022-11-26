@@ -1,25 +1,72 @@
-package search
+class SearchEngine(private val text: MutableList<String>) {
 
-class SearchEngine() {
     private fun getIndex(word: String, line: String): Int {
         val listLine = line.split(" ")
-        val index = listLine.indexOf(word)
-
-        return if (index >= 0) index + 1 else -1
+        return listLine.indexOf(word)
     }
 
-    fun find(word: String, line: String): String {
+
+
+    fun findPosition(word: String, line: String): String {
         val index = getIndex(word, line)
 
         return if (index == -1) "Not found" else index.toString()
     }
+
+
+
+    fun search(word: String): MutableList<String> {
+        val found = mutableListOf<String>()
+
+        for (line in text) {
+            if (line.contains(word, ignoreCase = true)) {
+                found.add(line)
+            }
+        }
+
+        return found
+    }
 }
 
-fun main() {
-    val se = SearchEngine()
+class CLI() {
+    private val people = mutableListOf<String>()
+    val se = SearchEngine(people)
 
-    val line = readln()
-    val word = readln()
+    fun readPeople() {
+        println("Enter the number of people:")
+        val peopleCount = readln().toInt()
 
-    println(se.find(word, line))
+        println("Enter all people")
+        for (i in 1..peopleCount) {
+            people.add(readln())
+        }
+    }
+
+    fun searchPeople() {
+        println("Enter the number of search queries:")
+        val queriesCount = readln().toInt()
+
+        for (i in 1..queriesCount) {
+            println("Enter data to search people")
+
+            val query = readln()
+            val resultQuery = se.search(query)
+
+            if (resultQuery.isNotEmpty()) {
+                println("People found:")
+                for (person in resultQuery) {
+                    println(person)
+                }
+            } else {
+                println("No matching people found.")
+            }
+        }
+    }
+}
+
+fun main(args: Array<String>) {
+    val cli = CLI()
+
+    cli.readPeople()
+    cli.searchPeople()
 }
